@@ -1,0 +1,14 @@
+services:
+  keras_predict:
+    image: keras_predict:1.1
+    container_name: keras_predict
+    environment:
+      - MODEL_PATH=/models/ResNet152V2-Weather-Classification-03.h5
+      - DATA_PATH=/data
+      - PREDICTION_PATH=/predictions
+    volumes:
+      - ./models:/models
+      - ./data:/data
+      - ./predictions:/predictions
+      - ./app:/app
+    command: ["python", "/app/classification.py", ""]
