@@ -1,9 +1,6 @@
 services:
-  python-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: weather_pred
+  weather-pred:
+    image: ghcr.io/neptade/applicationbigdataproject:latest
     environment:
       - INPUT_PATH=/data
       - MODEL_PATH=/model
