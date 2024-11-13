@@ -19,18 +19,22 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Build Docker image
-        env:
-          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/weather-pred
         run: |
-          # Build the Docker image
-          docker build -t "${IMAGE_NAME}:latest" .
+          # Convert the GitHub username to lowercase using bash
+          IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/applicationBigDataProject"
+          IMAGE_NAME_LOWER=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')
+
+          # Build the Docker image with the lowercase username
+          docker build -t "${IMAGE_NAME_LOWER}:latest" .
 
       - name: Push Docker image to GHCR
-        env:
-          IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/weather-pred
         run: |
+          # Convert the GitHub username to lowercase using bash
+          IMAGE_NAME="ghcr.io/${{ github.repository_owner }}/applicationBigDataProject"
+          IMAGE_NAME_LOWER=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')
+
           # Push the image to GHCR
-          docker push "${IMAGE_NAME}:latest"
+          docker push "${IMAGE_NAME_LOWER}:latest"
 
       - name: Log out from GitHub Container Registry
         run: docker logout ghcr.io
