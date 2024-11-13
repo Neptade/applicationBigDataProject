@@ -1,0 +1,14 @@
+services:
+  python-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weather_pred
+    environment:
+      - INPUT_PATH=/data
+      - MODEL_PATH=/model
+      - OUTPUT_PATH=/output
+    volumes:
+      - ./data:/data/
+      - ./model:/model/
+      - ./output:/output/

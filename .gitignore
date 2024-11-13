@@ -1,0 +1,4 @@
+weather-classification-TP.ipynb
+output/*.csv
+.venv/
+model/
