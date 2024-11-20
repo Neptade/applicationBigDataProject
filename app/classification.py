@@ -33,23 +33,26 @@ def load_data(img_paths):
     return X
 
 image_paths = sorted(glob(f'{INPUT_PATH}/*'))
-path_images_to_predict = []
+if(len(image_paths)!=0):
+    path_images_to_predict = []
 
-for img_path in image_paths:
-    if not is_valid_image(img_path):
-        print(f"Error: {img_path} is not a valid image")
-        continue
-    path_images_to_predict.append(img_path)
+    for img_path in image_paths:
+        if not is_valid_image(img_path):
+            print(f"Error: {img_path} is not a valid image")
+            continue
+        path_images_to_predict.append(img_path)
 
-images = load_data(path_images_to_predict)
+    images = load_data(path_images_to_predict)
 
-class_names = {0: 'cloudy', 1: 'foggy', 2: 'rainy', 3: 'shine', 4: 'sunrise'}
-model_v3 = load_model(f'{MODEL_PATH}/ResNet152V2-Weather-Classification-03.h5')
+    class_names = {0: 'cloudy', 1: 'foggy', 2: 'rainy', 3: 'shine', 4: 'sunrise'}
+    model_v3 = load_model(f'{MODEL_PATH}/ResNet152V2-Weather-Classification-03.h5')
 
-preds = np.argmax(model_v3.predict(images), axis=-1)
+    preds = np.argmax(model_v3.predict(images), axis=-1)
 
-labels = list(map(lambda x: class_names[x], list(preds)))
+    labels = list(map(lambda x: class_names[x], list(preds)))
 
-df = pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})
-timestamp = int(time.time() * 1000)
-df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
+    df = pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})
+    timestamp = int(time.time() * 1000)
+    df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
+else:
+    print("The data folder is empty")

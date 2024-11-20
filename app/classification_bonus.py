@@ -13,9 +13,14 @@ OUTPUT_PATH = os.getenv('OUTPUT_PATH', './output')
 INPUT_PATH = os.getenv('INPUT_PATH', './data')
 
 image_paths = sorted(glob(f'{INPUT_PATH}/*'))
-df = pd.read_csv(sorted(glob(f'{OUTPUT_PATH}/*.csv'))[-1])
-image_paths_already_predicted = df['image_name'].tolist()
+if len(sorted(glob(f'{OUTPUT_PATH}/*.csv')))!=0:
+    df = pd.read_csv(sorted(glob(f'{OUTPUT_PATH}/*.csv'))[-1])
+    image_paths_already_predicted = df['image_name'].tolist()
+else: 
+    df = pd.DataFrame()
+    image_paths_already_predicted = []
 valid_image_extensions = {".jpg", ".jpeg", ".png"}
+
 
 def is_valid_image(file_path):
     if os.path.splitext(img_path)[1].lower() in valid_image_extensions:
@@ -53,34 +58,37 @@ def load_data(img_paths):
 
     return X
 
-images_to_predict = []
-path_images_to_predict = []
+if(len(image_paths)!=0):
+    images_to_predict = []
+    path_images_to_predict = []
 
-for img_path in image_paths:
-    if not is_valid_image(img_path):
-        print(f"Error: {img_path} is not a valid image")
-        continue
+    for img_path in image_paths:
+        if not is_valid_image(img_path):
+            print(f"Error: {img_path} is not a valid image")
+            continue
 
-    if is_in_dataset(img_path, image_paths_already_predicted):
-        print(f'{os.path.basename(img_path)} is already in the dataset')
+        if is_in_dataset(img_path, image_paths_already_predicted):
+            print(f'{os.path.basename(img_path)} is already in the dataset')
+        else:
+            print(f'{os.path.basename(img_path)} is not in the dataset')
+            path_images_to_predict.append(img_path)
+
+    if path_images_to_predict:
+        images_to_predict = load_data(path_images_to_predict)
+
+        class_names = {0: 'cloudy', 1: 'foggy', 2: 'rainy', 3: 'shine', 4: 'sunrise'}
+        model_v3 = load_model(f'{MODEL_PATH}/ResNet152V2-Weather-Classification-03.h5')
+
+        preds = np.argmax(model_v3.predict(images_to_predict), axis=-1)
+
+        labels = list(map(lambda x: class_names[x], list(preds)))
+
+        df = pd.concat([df, pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})], ignore_index=True)
+        
+        timestamp = int(time.time() * 1000)
+
+        df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
     else:
-        print(f'{os.path.basename(img_path)} is not in the dataset')
-        path_images_to_predict.append(img_path)
-
-if path_images_to_predict:
-    images_to_predict = load_data(path_images_to_predict)
-
-    class_names = {0: 'cloudy', 1: 'foggy', 2: 'rainy', 3: 'shine', 4: 'sunrise'}
-    model_v3 = load_model(f'{MODEL_PATH}/ResNet152V2-Weather-Classification-03.h5')
-
-    preds = np.argmax(model_v3.predict(images_to_predict), axis=-1)
-
-    labels = list(map(lambda x: class_names[x], list(preds)))
-
-    df = pd.concat([df, pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})], ignore_index=True)
-    
-    timestamp = int(time.time() * 1000)
-
-    df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
+        print("No new images to predict")
 else:
-    print("No new images to predict")
+    print("The data folder is empty")
