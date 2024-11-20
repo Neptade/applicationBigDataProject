@@ -1,8 +1,8 @@
 import os
 from glob import glob
-import time
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from tensorflow.image import resize
 from tensorflow.keras.utils import load_img, img_to_array
 from keras.models import load_model
@@ -52,7 +52,8 @@ if(len(image_paths)!=0):
     labels = list(map(lambda x: class_names[x], list(preds)))
 
     df = pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})
-    timestamp = int(time.time() * 1000)
+    now = datetime.now()
+    timestamp = now.strftime("%d-%m-%Y-%H-%M-%S")
     df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
 else:
     print("The data folder is empty")
