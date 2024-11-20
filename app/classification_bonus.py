@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-import time
+from datetime import datetime
 from glob import glob
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.image import resize
@@ -85,7 +85,8 @@ if(len(image_paths)!=0):
 
         df = pd.concat([df, pd.DataFrame({'image_name': path_images_to_predict, 'prediction_label': labels})], ignore_index=True)
         
-        timestamp = int(time.time() * 1000)
+        now = datetime.now()
+        timestamp = now.strftime("%d-%m-%Y-%H-%M-%S")
 
         df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
     else:
