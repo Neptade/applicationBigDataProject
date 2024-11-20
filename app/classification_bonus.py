@@ -6,14 +6,27 @@ from glob import glob
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.image import resize
 from tensorflow.keras.models import load_model
+from PIL import Image, UnidentifiedImageError
 
 MODEL_PATH = os.getenv('MODEL_PATH', './model')
 OUTPUT_PATH = os.getenv('OUTPUT_PATH', './output')
 INPUT_PATH = os.getenv('INPUT_PATH', './data')
 
-image_paths = sorted(glob(f'{INPUT_PATH}/*.jpg'))
+image_paths = sorted(glob(f'{INPUT_PATH}/*'))
 df = pd.read_csv(sorted(glob(f'{OUTPUT_PATH}/*.csv'))[-1])
 image_paths_already_predicted = df['image_name'].tolist()
+valid_image_extensions = {".jpg", ".jpeg", ".png"}
+
+def is_valid_image(file_path):
+    if os.path.splitext(img_path)[1].lower() in valid_image_extensions:
+        try:
+            with Image.open(file_path) as img:
+                img.verify()
+            return True
+        except (UnidentifiedImageError, FileNotFoundError, IOError):
+            return False
+    else:
+        return False
 
 def is_in_dataset(img_path, images):
     img = load_image(img_path)
@@ -44,10 +57,14 @@ images_to_predict = []
 path_images_to_predict = []
 
 for img_path in image_paths:
+    if not is_valid_image(img_path):
+        print(f"Error: {img_path} is not a valid image")
+        continue
+
     if is_in_dataset(img_path, image_paths_already_predicted):
-        print(f'{img_path} is already in the dataset')
+        print(f'{os.path.basename(img_path)} is already in the dataset')
     else:
-        print(f'{img_path} is not in the dataset')
+        print(f'{os.path.basename(img_path)} is not in the dataset')
         path_images_to_predict.append(img_path)
 
 if path_images_to_predict:
@@ -66,4 +83,4 @@ if path_images_to_predict:
 
     df.to_csv(f'{OUTPUT_PATH}/pred_{timestamp}.csv', index=False)
 else:
-    print("No new images to predict.")
+    print("No new images to predict")
