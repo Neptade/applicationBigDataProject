@@ -7,9 +7,9 @@ from tensorflow.image import resize
 from tensorflow.keras.utils import load_img, img_to_array
 from keras.models import load_model
 
-INPUT_PATH = os.getenv('INPUT_PATH', '../data')
-MODEL_PATH = os.getenv('MODEL_PATH', '../model')
-OUTPUT_PATH = os.getenv('OUTPUT_PATH', '../output')
+INPUT_PATH = os.getenv('INPUT_PATH', './data')
+MODEL_PATH = os.getenv('MODEL_PATH', './model')
+OUTPUT_PATH = os.getenv('OUTPUT_PATH', './output')
 
 def load_data(img_paths):
     X = np.zeros(shape=(len(img_paths), 256,256,3))
