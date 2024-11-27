@@ -12,12 +12,12 @@ INPUT_PATH = os.getenv('INPUT_PATH', './data')
 MODEL_PATH = os.getenv('MODEL_PATH', './model')
 OUTPUT_PATH = os.getenv('OUTPUT_PATH', './output')
 
-SHOULD_DEDUPLICATE = os.getenv('SHOULD_DEDUPLICATE', 'False').lower() == 'true'
+USE_CACHE = os.getenv('USE_CACHE', 'False').lower() == 'true'
 
-print('Running WITH deduplication' if SHOULD_DEDUPLICATE else 'Running WITHOUT deduplication')
+print('Running WITH cache' if USE_CACHE else 'Running WITHOUT cache')
 
 image_paths = sorted(glob(f'{INPUT_PATH}/*'))
-if SHOULD_DEDUPLICATE and len(sorted(glob(f'{OUTPUT_PATH}/*.csv'))) != 0:
+if USE_CACHE and len(sorted(glob(f'{OUTPUT_PATH}/*.csv'))) != 0:
     df = pd.read_csv(sorted(glob(f'{OUTPUT_PATH}/*.csv'))[-1])
     image_paths_already_predicted = df['image_name'].tolist()
 else:
@@ -77,7 +77,7 @@ if len(image_paths) != 0:
             continue
 
         already_exists, at_path = is_in_dataset(img_path, image_paths_already_predicted)
-        if SHOULD_DEDUPLICATE and already_exists:
+        if USE_CACHE and already_exists:
             print(f'{os.path.basename(img_path)} is already in the dataset as {os.path.basename(at_path)}')
         else:
             print(f'{os.path.basename(img_path)} is not in the dataset')
