@@ -6,6 +6,7 @@ services:
       - INPUT_PATH=/data
       - MODEL_PATH=/model
       - OUTPUT_PATH=/output
+      - SHOULD_DEDUPLICATE=true
     volumes:
       - ./data:/data/
       - ./model:/model/
