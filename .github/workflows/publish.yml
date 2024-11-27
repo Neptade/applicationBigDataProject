@@ -3,7 +3,10 @@ name: Publish Docker Image to GHCR
 on:
   push:
     paths:
-      - '/app/**'
+      - '**/*.py'
+      - './Dockerfile'
+      - './.github/workflows/*.yml'
+      - 'requirements.txt'
 
 jobs:
   build-and-push:
