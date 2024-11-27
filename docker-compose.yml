@@ -1,6 +1,7 @@
 services:
   weather-pred:
     image: ghcr.io/neptade/applicationbigdataproject:latest
+    platform: linux/amd64
     environment:
       - INPUT_PATH=/data
       - MODEL_PATH=/model
