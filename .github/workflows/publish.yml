@@ -2,6 +2,8 @@ name: Publish Docker Image to GHCR
 
 on:
   push:
+    paths:
+      - '/app/**'
 
 jobs:
   build-and-push:
